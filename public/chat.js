@@ -1,6 +1,7 @@
 //Make connection
 
-const socket = io.connect('https://limitless-reef-90330.herokuapp.com')
+// const socket = io.connect('https://limitless-reef-90330.herokuapp.com')
+const socket = io.connect('http://localhost:5000')
 
 // Query DOM
 const message = document.getElementById('message'),
