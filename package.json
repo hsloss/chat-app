@@ -1,0 +1,28 @@
+{
+  "name": "chat-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hsloss/chat-app.git"
+  },
+  "author": "Hannah Sloss, Solomon Zikarge, Ayaleneh Getaun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hsloss/chat-app/issues"
+  },
+  "homepage": "https://github.com/hsloss/chat-app#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
