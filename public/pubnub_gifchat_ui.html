@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Angular 2</title>
+    <script src="https://unpkg.com/core-js@2.4.1/client/shim.min.js"></script>
+    <script src="https://unpkg.com/zone.js@0.7.2/dist/zone.js"></script>
+    <script src="https://unpkg.com/reflect-metadata@0.1.9/Reflect.js"></script>
+    <script src="https://unpkg.com/rxjs@5.0.1/bundles/Rx.js"></script>
+
+    <script src="https://unpkg.com/@angular/core/bundles/core.umd.js"></script>
+    <script src="https://unpkg.com/@angular/common/bundles/common.umd.js"></script>
+    <script src="https://unpkg.com/@angular/compiler/bundles/compiler.umd.js"></script>
+    <script src="https://unpkg.com/@angular/platform-browser/bundles/platform-browser.umd.js"></script>
+    <script src="https://unpkg.com/@angular/forms/bundles/forms.umd.js"></script>
+    <script src="https://unpkg.com/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js"></script>
+
+    <script src="https://unpkg.com/pubnub@4.3.3/dist/web/pubnub.js"></script>
+    <script src="https://unpkg.com/pubnub-angular2@1.0.0-beta.8/dist/pubnub-angular2.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+  </head>
+  <body>
+    <main-component>
+      Loading...
+    </main-component>
+    <script>
+    var app = window.app = {};
+    app.main_component = ng.core.Component({
+        selector: 'main-component',
+        template: `
+<div class="container">
+    <pre>
+    NOTE: make sure to update the PubNub keys below with your keys,
+    and ensure that the BLOCK settings are configured properly!
+    </pre>
+    <h3>MyApp GifChat Integration</h3>
+    <div>use a command like "/gif hello" to embed a GIF</div>
+    <hr/>
+    <input type="text" [(ngModel)]="toSend" />
+    <button class="btn btn-primary" (click)="publish()">Send GIF Message!</button>
+    <br/>
+    <br/>
+    <ul class="list-unstyled">
+      <li *ngFor="let item of messages.slice().reverse()">
+        <div>message: {{item.message.text}}</div>
+        <div><img *ngFor="let link of item.message.gifs" [src]="link" /></div>
+      </li>
+    </ul>
+</div>`
+    }).Class({
+        constructor: [PubNubAngular, function(pubnubService){
+            var self = this;
+            self.pubnubService = pubnubService;
+            self.channelName = 'pubnub-gif-chat';
+            self.toSend = '';
+            pubnubService.init({
+                publishKey:   'pub-c-73386b9b-a3b7-4a19-95d1-0ec5c3b8bba0',
+                subscribeKey: 'sub-c-e2f238c6-047d-11e9-9231-4abfa1972993',
+                uuid: PubNub.generateUUID(),
+                ssl:true
+            });
+            pubnubService.subscribe({channels: [self.channelName], triggerEvents: true});
+            self.messages = pubnubService.getMessage(this.channelName,function(msg){
+              // no handler necessary, dynamic collection of msg objects
+            });
+        }],
+        publish: function(){
+            if (this.toSend !== '') {
+                this.pubnubService.publish({channel: this.channelName, message:{text:this.toSend}});
+                this.toSend = '';
+            }
+        }
+    });
+    app.main_module = ng.core.NgModule({
+        imports: [ng.platformBrowser.BrowserModule, ng.forms.FormsModule],
+        declarations: [app.main_component],
+        providers: [PubNubAngular],
+        bootstrap: [app.main_component]
+    }).Class({
+        constructor: function(){}
+    });
+    document.addEventListener('DOMContentLoaded', function(){
+        ng.platformBrowserDynamic.platformBrowserDynamic().bootstrapModule(app.main_module);
+    });
+    </script>
+  </body>
+</html>

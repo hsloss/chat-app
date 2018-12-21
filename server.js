@@ -1,6 +1,7 @@
 'use strict'
 const express = require('express')
 const app = express()
+const superagent =require('superagent')
 require('dotenv').config()
 const socket = require('socket.io')
 const mongoose = require('mongoose')
@@ -26,7 +27,7 @@ const messageSchema = new mongoose.Schema({
     message: String
   })
   
-const Message = mongoose.model('Message', messageSchema)
+const Message = mongoose.model('Message', messageSchema)  
 
 // Static files
 app.use(express.static('public'))
@@ -51,3 +52,25 @@ io.on('connection', (socket) => {
     })
 
 })
+
+app.get('/gif', gifController)
+
+function gifController(req, res) {
+    const url = `http://api.giphy.com/v1/gifs/search?q=${req.query.q}&api_key=${process.env.GIPHY_API_KEY}&limit=5`
+    superagent.get(url)
+    .then(result => {
+      let arr = []
+      for(let i = 0; i < result.body.data.length; i++){
+        let newGif = new GifConstructor(result.body.data[i])
+        arr.push(newGif)
+      }
+      console.log(result)
+      res.send(arr)
+    })
+    .catch(err=>res.send(err))
+}
+
+const GifConstructor = function(gif) {
+    this.title = gif.title
+    this.url = gif.embed_url
+  }

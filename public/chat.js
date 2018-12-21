@@ -9,6 +9,8 @@ const message = document.getElementById('message'),
       button = document.getElementById('send'),
       output = document.getElementById('output'),
       feedback = document.getElementById('feedback')
+      gifSearch = document.getElementById('gifsearch')
+      fileUpload = document.getElementById('file-upload')
 
 // Emit events
 button.addEventListener('click', function(){
@@ -21,6 +23,10 @@ button.addEventListener('click', function(){
 
 message.addEventListener('keypress', function(){
   socket.emit('typing', handle.value);
+})
+
+gifSearch.addEventListener('click', function(){
+
 })
 
 
